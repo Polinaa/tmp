@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Pipeline>
+	<Description>The topics for all feed items from the last year</Description>
+	<DataConnectionUID>cafedead-b822-40f7-bf2a-94d0714911d4</DataConnectionUID>
+	<TriggerSQL>SELECT MAX(id) FROM feedItemRegular</TriggerSQL>
+	<TriggerPeriod>36000</TriggerPeriod>
+
+	<ETL>
+		<Extract>
+			<SQL>
+				<![CDATA[
+					SELECT
+						topic.feedItemId, topic.topic,
+						feedItem.created
+					FROM
+						feedItemTopic topic
+						JOIN feedItemRegular feedItem ON (feedItem.id = topic.feedItemId)
+					WHERE
+						feedItem.created > (NOW() - INTERVAL 365 DAY)
+				]]>
+			</SQL>
+		</Extract>
+		<Transform />
+		<Load>
+			<Columns>
+				<Column primary="true">
+					<Name>feedItemId</Name>
+					<Type>INT</Type>
+				</Column>
+				<Column>
+					<Name>topic</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>created</Name>
+					<Type>DATE_TIME</Type>
+				</Column>
+			</Columns>
+			<Indexes />
+		</Load>
+	</ETL>
+
+	<Dataset>
+		<Dimensions>
+			<Dimension>
+				<ColumnID>feedItemId</ColumnID>
+				<Alias>Feed Item ID</Alias>
+				<SQL>feedItemId</SQL>
+				<DataType>INT</DataType>
+			</Dimension>
+			<Dimension>
+				<ColumnID>topic</ColumnID>
+				<Alias>Topic</Alias>
+				<SQL>topic</SQL>
+				<DataType>STRING</DataType>
+			</Dimension>
+		</Dimensions>
+		<Measures>
+			<Measure>
+				<ColumnID>topicCount</ColumnID>
+				<Alias>Number of topics</Alias>
+				<SQL>topic</SQL>
+				<AggregationType>COUNT_DISTINCT</AggregationType>
+			</Measure>
+		</Measures>
+	</Dataset>
+</Pipeline>

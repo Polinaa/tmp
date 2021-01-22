@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- TODO We need a DTD here -->
+<!--
+This file contains the relationships between ALL datasets in the workspace.
+I thought about adding the relationships to each table, but then we'd either have to add it to both table files or only see the relationship in one table file. So my idea was to have one file with all the relationships.
+TODO CONCEPT Does this make sense, or is there a better approach available?
+Yes, it's fine, but couple of thoughts here:
+1) What if I need to join more then 1 table?
+For example:
+SELECT A.column, B.column, C.column FROM A 
+	LEFT JOIN B ON...
+	LEFT JOIN C ON...
+2) Maybe it will be good idea to somehow call this subquery, give it an Alias.
+(SELECT A.column, B.column, C.column FROM A 
+	LEFT JOIN B ON...
+	LEFT JOIN C ON...) as JOINED_Q
+Other thoughts are presented below.
+-->
+<Joins>
+	<Join>
+		<DatasetA>EmbedStatsPurchaseAfterPipeline</DatasetA>
+		<DatasetB>SomeOtherTable</DatasetB>
+		<!-- TODO CONCEPT What types do we need to provide, please list them here -->
+		<!-- standard: LEFT OUTER JOIN, RIGHT OUTER JOIN, INNER JOIN, FULL OUTER JOIN 
+		+ Clikchouse: ANY/SEMI/ANTI  -->
+		<Type>JOIN</Type>
+		<!-- TODO CONCEPT Is it enough to just define columns on both datasets? Or do we need more params?
+		Of course you need more params, such as: how the join will be defined.
+		Imagine, you would like to set smth like this one:
+		SELECT A.column FROM A 
+		LEFT JOIN B ON A.date>=B.date 
+		So, you also need a type of relation between tables: =, >=, <=, IN, BETWEEN ... 
+		+ In the example below you have 2 mappings. But are they: OR, AND, NOT ? So what is the logics between them?
+		-->
+		<ColumnMapping>
+			<Mapping>
+				<!-- TODO CONCEPT What to put here? The columnId of the dimensions? Or the column name of the target table? -->
+				<!-- It depends on how you will generate the query, if you'll process the columnId from the dimensions, it will be fine to specify it here -->
+				<ColumnA>sessionId</ColumnA>
+				<ColumnB>columnFromDatasetB</ColumnB>
+			</Mapping>
+			<MappingConnection>AND</MappingConnection>
+			<Mapping>
+				<ColumnA>feedItemId</ColumnA>
+				<ColumnB>feedItemIdInDatasetB</ColumnB>
+			</Mapping>
+		</ColumnMapping>
+	</Join>
+</Joins>

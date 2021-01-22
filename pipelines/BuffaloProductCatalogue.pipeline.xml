@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Pipeline>
+	<Description>A customer's product catalogue we need as a dataset table</Description>
+
+	<ETL>
+		<Extract>
+			<CsvExtractor>
+				<URL>https://s3.eu-central-1.amazonaws.com/media-local.liverea.ch/devs/jan/buffalode_ugcde.csv</URL>
+				<Delimiter>|</Delimiter>
+				<Header>true</Header>
+				<DateFormat>yyyy-MM-dd HH:mm:ss.SSSS</DateFormat>
+				<TriggerMethod>URL_LAST_MODIFIED</TriggerMethod>
+				<TriggerPeriod>36000</TriggerPeriod>
+			</CsvExtractor>
+			<SQL>
+				<![CDATA[
+					SELECT
+						`product-id` AS productID, `parent-id` as productGroupId, name, description AS descriptionDE, deeplink as productUrlDE, category,
+						manufacturer AS brand, price AS priceDE, discount-price AS discountPriceDE, color AS colorDE, gender, `image-url-1` AS imageUrl,
+						stock AS inStock, 'EUR' AS currency
+					FROM
+						LivereachTable
+				]]>
+			</SQL>
+		</Extract>
+		<Transform />
+		<Load>
+			<Columns>
+				<Column primary="true">
+					<Name>productID</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>productGroupId</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>name</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>descriptionDE</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>productUrlDE</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>category</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>brand</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>priceDE</Name>
+					<Type>FLOAT</Type>
+				</Column>
+				<Column>
+					<Name>discountPriceDE</Name>
+					<Type>FLOAT</Type>
+				</Column>
+				<Column>
+					<Name>colorDE</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>gender</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>imageUrl</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>inStock</Name>
+					<Type>BOOLEAN</Type>
+				</Column>
+				<Column>
+					<Name>currency</Name>
+					<Type>STRING</Type>
+				</Column>
+			</Columns>
+			<Indexes />
+		</Load>
+	</ETL>
+
+	<Dataset/>
+</Pipeline>

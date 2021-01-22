@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Pipeline>
+	<Description>Contains the core feed item data, to join to other feed item related data by ID if needed</Description>
+	<DataConnectionUID>cafedead-b822-40f7-bf2a-94d0714911d4</DataConnectionUID>
+	<TriggerSQL>SELECT MAX(id) FROM feedItemRegular</TriggerSQL>
+	<TriggerPeriod>36000</TriggerPeriod>
+
+	<ETL>
+		<Extract>
+			<SQL>
+				<![CDATA[
+					SELECT
+						id, uid, feedId, type AS sourceType, contentType, created, socialUserName, socialUserAlias, likeCount, viewCount, sentiment, title, text
+					FROM
+						feedItemRegular
+					WHERE
+						created > (NOW() - INTERVAL 300 DAY)
+				]]>
+			</SQL>
+		</Extract>
+		<Transform />
+		<Load>
+			<Columns>
+				<Column primary="true">
+					<Name>id</Name>
+					<Type>INT</Type>
+				</Column>
+				<Column>
+					<Name>uid</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>feedId</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>sourceType</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>contentType</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>created</Name>
+					<Type>DATE_TIME</Type>
+				</Column>
+				<Column>
+					<Name>socialUserName</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>socialUserAlias</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>likeCount</Name>
+					<Type>INT</Type>
+				</Column>
+				<Column>
+					<Name>viewCount</Name>
+					<Type>INT</Type>
+				</Column>
+				<Column>
+					<Name>sentiment</Name>
+					<Type>INT</Type>
+				</Column>
+				<Column>
+					<Name>title</Name>
+					<Type>STRING</Type>
+				</Column>
+				<Column>
+					<Name>text</Name>
+					<Type>STRING</Type>
+				</Column>
+			</Columns>
+			<Indexes />
+		</Load>
+	</ETL>
+
+	<Dataset>
+		<Dimensions>
+			<Dimension>
+				<ColumnID>id</ColumnID>
+				<Alias>Feed Item ID</Alias>
+				<SQL>id</SQL>
+				<DataType>INT</DataType>
+			</Dimension>
+			<Dimension>
+				<ColumnID>uid</ColumnID>
+				<Alias>Feed Item UID</Alias>
+				<SQL>uid</SQL>
+				<DataType>STRING</DataType>
+			</Dimension>
+			<Dimension>
+				<ColumnID>feedId</ColumnID>
+				<Alias>Feed ID</Alias>
+				<SQL>feedId</SQL>
+				<DataType>INT</DataType>
+			</Dimension>
+			<Dimension>
+				<ColumnID>sourceType</ColumnID>
+				<Alias>Source Type</Alias>
+				<SQL>sourceType</SQL>
+				<DataType>STRING</DataType>
+			</Dimension>
+			<Dimension>
+				<ColumnID>created</ColumnID>
+				<Alias>Created Date</Alias>
+				<SQL>toDate(created)</SQL>
+				<DataType>STRING</DataType>
+			</Dimension>
+			<Dimension>
+				<ColumnID>socialUserName</ColumnID>
+				<Alias>Social User Name</Alias>
+				<SQL>socialUserName</SQL>
+				<DataType>STRING</DataType>
+			</Dimension>
+			<Dimension>
+				<ColumnID>socialUserAlias</ColumnID>
+				<Alias>Social User Alias</Alias>
+				<SQL>socialUserAlias</SQL>
+				<DataType>STRING</DataType>
+			</Dimension>
+			<Dimension>
+				<ColumnID>title</ColumnID>
+				<Alias>Post Title</Alias>
+				<SQL>title</SQL>
+				<DataType>STRING</DataType>
+			</Dimension>
+			<Dimension>
+				<ColumnID>text</ColumnID>
+				<Alias>Post Text</Alias>
+				<SQL>text</SQL>
+				<DataType>STRING</DataType>
+			</Dimension>
+		</Dimensions>
+		<Measures>
+			<Measure>
+				<ColumnID>likeCountSum</ColumnID>
+				<Alias>Like Count Sum</Alias>
+				<SQL>likeCount</SQL>
+				<AggregationType>SUM</AggregationType>
+			</Measure>
+			<Measure>
+				<ColumnID>viewCountSum</ColumnID>
+				<Alias>View Count Sum</Alias>
+				<SQL>viewCount</SQL>
+				<AggregationType>SUM</AggregationType>
+			</Measure>
+			<Measure>
+				<ColumnID>sentimentAverage</ColumnID>
+				<Alias>Average Sentiment</Alias>
+				<SQL>sentiment</SQL>
+				<AggregationType>AVERAGE</AggregationType>
+			</Measure>
+		</Measures>
+	</Dataset>
+</Pipeline>
